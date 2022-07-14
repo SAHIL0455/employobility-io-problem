@@ -5,17 +5,32 @@ import java.util.List;
 import java.util.Scanner;
 
 public class EmployeePayrollService {
-    static List<EmployeePayrollData> EmployeePayrollList = new ArrayList<EmployeePayrollData>();
+    public enum IOService {CONSOLE_IO, FILE_IO, DB_IO, REST_ID;
+    }
+    static List<EmployeePayrollData> EmployeePayrollList;
+
+    public EmployeePayrollService() {
+    }
+
+    public EmployeePayrollService(List<EmployeePayrollData> EmployeePayrollList) {
+        this.EmployeePayrollList = EmployeePayrollList;
+    }
 
     public static void main(String[] args) {
         System.out.println("Welcome to Employability IO problem");
         Scanner consoleInputService = new Scanner(System.in);
-        readEmployeePayRollData(consoleInputService);
-        writeEmployeePayRollData();
+        ArrayList<EmployeePayrollData> employeePayrollList = new ArrayList<>();
+        EmployeePayrollService employeePayrollService = new EmployeePayrollService(employeePayrollList);
+        employeePayrollService.readEmployeePayRollData(consoleInputService);
+        employeePayrollService.writeEmployeePayRollData(IOService.CONSOLE_IO);
     }
 
-    private static void writeEmployeePayRollData() {
-        System.out.println("writing Employee Payroll Roaster to console\n"+EmployeePayrollList);
+    public static void writeEmployeePayRollData(IOService ioService) {
+        if (ioService.equals(IOService.CONSOLE_IO)) {
+            System.out.println("writing Employee Payroll Roaster to console\n" + EmployeePayrollList);
+        } else if (ioService.equals(IOService.FILE_IO)) {
+            new EmployeePayrollFileIOService().writeData(EmployeePayrollList);
+        }
     }
 
     private static void readEmployeePayRollData(Scanner consoleInputService) {
@@ -27,4 +42,14 @@ public class EmployeePayrollService {
         double salary = consoleInputService.nextDouble();
         EmployeePayrollList.add(new EmployeePayrollData(id,name,salary));
     }
+    public long countEntries(IOService ioService) {
+        if (ioService.equals(IOService.FILE_IO))
+            return new EmployeePayrollFileIOService().countEntries();
+        return 0;
+    }
+    public void printData(IOService ioService) {
+        if (ioService.equals(IOService.FILE_IO))
+            new EmployeePayrollFileIOService().printData();
+    }
+
 }
